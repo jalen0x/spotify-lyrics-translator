@@ -83,7 +83,7 @@ production:
     <<: *default
     database: spotify_lyrics_translator_production
     username: spotify_lyrics_translator
-    password: <%= ENV["SPOTIFY_LYRICS_TRANSLATOR_DATABASE_PASSWORD"] %>
+    password: <%= ENV["POSTGRES_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: spotify_lyrics_translator_production_cache

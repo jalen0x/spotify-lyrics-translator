@@ -2,6 +2,7 @@
 
 class TranslateController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :verify_api_key
 
   def create
     lines = params[:lines]
@@ -20,6 +21,15 @@ class TranslateController < ApplicationController
   end
 
   private
+
+  def verify_api_key
+    api_key = request.headers["X-API-Key"]
+    expected_key = Rails.application.credentials.api_key
+
+    if api_key.blank? || api_key != expected_key
+      render json: { error: "Unauthorized" }, status: :unauthorized
+    end
+  end
 
   def build_translation_prompt
     <<~PROMPT

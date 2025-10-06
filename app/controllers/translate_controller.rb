@@ -42,6 +42,36 @@ class TranslateController < ApplicationController
   end
 
   def translate_lines(lines)
+    translations = []
+    lines_to_translate = []
+    line_indices = []
+
+    lines.each_with_index do |line, index|
+      cached = LyricCache.fetch_translation(line)
+      if cached
+        translations[index] = cached
+      else
+        lines_to_translate << line
+        line_indices << index
+      end
+    end
+
+    if lines_to_translate.any?
+      new_translations = call_openai_api(lines_to_translate)
+
+      new_translations.each_with_index do |translated, i|
+        original = lines_to_translate[i]
+        index = line_indices[i]
+
+        translations[index] = translated
+        LyricCache.store_translation(original, translated)
+      end
+    end
+
+    translations
+  end
+
+  def call_openai_api(lines)
     base_url = Rails.application.credentials.openai.base_url.chomp("/")
     base_url = "#{base_url}/v1" unless base_url.end_with?("/v1")
 

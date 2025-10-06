@@ -73,7 +73,6 @@ class TranslateController < ApplicationController
 
   def call_openai_api(lines)
     base_url = Rails.application.credentials.openai.base_url.chomp("/")
-    base_url = "#{base_url}/v1" unless base_url.end_with?("/v1")
 
     client = OpenAI::Client.new(
       api_key: Rails.application.credentials.openai.api_key,
